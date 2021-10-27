@@ -38,6 +38,6 @@ Improvements (TODOs):
 - error handling (user/server/bd validations)
 - logging
 - mappeur with mapstruct json->pojo
-- Env variable in Spring Boot's application.properties
+- env variable in Spring Boot's application.properties
 - +lombok
 - ...
