@@ -1,5 +1,6 @@
 package com.ibento;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,12 @@ public class IbentoService {
     private IbentoMapper mapper;
 
     public IbentoDto getIbento(String id) {
-        DBObject ibentoObj = this.dao.get(id);
+        Document ibentoObj = this.dao.get(id);
         return this.mapper.toDto(ibentoObj);
     }
 
     public List<IbentoListDto> getIbentos() {
-        List<DBObject> ibentos = this.dao.getAll();
+        List<Document> ibentos = this.dao.getAll();
         List<IbentoDto> ibentosDto = this.mapper.toDto(ibentos);
         return ibentosDto.stream().map(this::toList).collect(Collectors.toList());
     }
@@ -37,13 +38,13 @@ public class IbentoService {
     }
 
     public IbentoDto createIbento(IbentoDto ibentoToCreate) {
-        DBObject bdObject = this.mapper.toDBObject(ibentoToCreate);
-        return this.mapper.toDto(this.dao.create(bdObject));
+        Document document = this.mapper.toDocument(ibentoToCreate);
+        return this.mapper.toDto(this.dao.create(document));
     }
 
     public IbentoDto updateIbento(IbentoDto ibentoToUpdate) {
-        DBObject bdObject = this.mapper.toDBObject(ibentoToUpdate);
-        return this.mapper.toDto(this.dao.update(bdObject));
+        Document document = this.mapper.toDocument(ibentoToUpdate);
+        return this.mapper.toDto(this.dao.update(document));
     }
 
     public void deleteIbento(String id) {

@@ -1,14 +1,24 @@
 package com.ibento;
 
+import static com.mongodb.client.model.Filters.eq;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.*;
-import com.mongodb.client.model.Filters;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import static com.mongodb.client.model.Sorts.descending;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
@@ -18,47 +28,57 @@ import javax.annotation.PostConstruct;
 public class IbentoDao {
 
     private static final String ID = "_id";
-    private static final String URL_DB_HOST = "localhost:27017";
-    private static final String DB_NAME = "local";
+    private static final String DB_NAME = "dev";
     private static final String COLLECTION_NAME = "ibentos";
+    private static final ConnectionString connectionString =
+            new ConnectionString("mongodb+srv://kumo:kumo@dev.ijikl.mongodb.net/ibentos?retryWrites=true&w=majority");
 
-    private DBCollection dbCollection;
+    private MongoCollection<Document> dbCollection;
 
+    //TODO: Créer une config générique d'accès aux données (spring config)
     @PostConstruct
     public void initDataBaseCollection() throws UnknownHostException {
-        MongoClient mongoClient = new MongoClient(URL_DB_HOST);
-        this.dbCollection = mongoClient.getDB(DB_NAME).getCollection(COLLECTION_NAME);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .build();
+
+        MongoClient mongoClient = MongoClients.create(settings);
+        MongoDatabase database = mongoClient.getDatabase(DB_NAME);
+        this.dbCollection = database.getCollection(COLLECTION_NAME);
     }
 
-    public DBObject get(String id) {
-        DBObject query = new BasicDBObject(ID, new ObjectId(id));
-        DBCursor cursor = this.dbCollection.find(query);
-        return cursor.one();
+    public Document get(String id) {
+        return this.dbCollection.find(eq(ID, new ObjectId(id))).first();
     }
 
-    public List<DBObject> getAll() {
-        return this.dbCollection.find().toArray();
+    public List<Document> getAll() {
+        return this.dbCollection.find().sort(sorting()).into(new ArrayList<Document>());
     }
 
-    public List<DBObject> find(String name) {
-        BasicDBObject query = new BasicDBObject("name", compile(name, CASE_INSENSITIVE));
-        return this.dbCollection.find(query).toArray();
+    public List<Document> find(String name) {
+        Document query = new Document("name", compile(name, CASE_INSENSITIVE));
+        return this.dbCollection.find(query).sort(sorting()).into(new ArrayList<Document>());
     }
 
-    public DBObject create(DBObject dbObjectToInsert) {
-        this.dbCollection.insert(dbObjectToInsert);
-        return dbObjectToInsert;
+    public Document create(Document documentToInsert) {
+        documentToInsert.remove(ID);
+        this.dbCollection.insertOne(documentToInsert);
+        return documentToInsert;
     }
 
-    public DBObject update(DBObject dbObjectToUpdate) {
-        BasicDBObject query = new BasicDBObject(ID, new ObjectId((String) dbObjectToUpdate.get(ID)));
-        Object id = dbObjectToUpdate.removeField(ID);
-        this.dbCollection.update(query, new BasicDBObject("$set", dbObjectToUpdate));
-        dbObjectToUpdate.put(ID, new ObjectId(id.toString()));
-        return dbObjectToUpdate;
+    public Document update(Document documentToUpdate) {
+        Document query = new Document(ID, new ObjectId((String) documentToUpdate.get(ID)));
+        Object id = documentToUpdate.remove(ID);
+        this.dbCollection.updateOne(query, new BasicDBObject("$set", documentToUpdate));
+        documentToUpdate.put(ID, new ObjectId(id.toString()));
+        return documentToUpdate;
     }
 
     public void delete(String id) {
-        this.dbCollection.remove(new BasicDBObject(ID, new ObjectId(id)));
+        this.dbCollection.deleteOne(new BasicDBObject(ID, new ObjectId(id)));
+    }
+
+    private Bson sorting() {
+        return descending("startDate");
     }
 }
