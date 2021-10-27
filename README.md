@@ -41,3 +41,4 @@ Improvements (TODOs):
 - logging
 - mappeur with mapstruct json->pojo
 - +lombok
+- ...
