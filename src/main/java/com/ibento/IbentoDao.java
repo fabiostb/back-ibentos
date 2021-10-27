@@ -1,6 +1,7 @@
 package com.ibento;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.ascending;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
@@ -79,6 +80,6 @@ public class IbentoDao {
     }
 
     private Bson sorting() {
-        return descending("startDate");
+        return ascending("startDate");
     }
 }
