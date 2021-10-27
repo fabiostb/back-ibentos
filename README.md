@@ -18,7 +18,7 @@ mvn clean install
 - ``` Run IbentoApplication ```
 - Go here if you want to test the API:
 ```sh
-localhost:8080/swagger-ui.htm
+localhost:8080/swagger-ui.html
 ```
 - Enjoy It!
 
