@@ -1,16 +1,12 @@
 package com.ibento;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import util.Utils;
 
 import static com.jasongoodwin.monads.Try.ofFailable;
-import static util.Utils.emptyIfNull;
+import static com.util.Utils.emptyIfNull;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;

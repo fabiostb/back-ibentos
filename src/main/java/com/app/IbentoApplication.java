@@ -1,4 +1,4 @@
-package app;
+package com.app;
 
 import com.google.common.base.Predicate;
 import org.springframework.boot.SpringApplication;
