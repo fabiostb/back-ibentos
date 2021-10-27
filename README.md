@@ -7,9 +7,14 @@ Ibento = 'Event' in Japanese :p
 Spring Boot API REST
 
 ## Setup:
-- ``` mvn clean install ``` If you have a good IDE it will do this on its own for you :) 
+- Install Maven -> https://maven.apache.org/download.cgi
+- Run:
+```sh
+mvn clean install
+```
+*If you have a good IDE it will do this on its own for you :) 
 - DB <-- The data is stored in a MongoDb on the cloud (see IbentoDao). 
-> Note: No configuration for the database.
+> Note: no configuration needed for DB.
 - ``` Run IbentoApplication ```
 - Go to here if you want to test the API:
 ```sh
