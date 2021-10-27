@@ -22,4 +22,22 @@ localhost:8080/swagger-ui.html
 ```
 - Enjoy It!
 
+Json de test:
+```json
+{
+  "name": "Test",
+  "description": "updated",
+  "startDate": "2021-10-20",
+  "endDate": "2021-10-20"
+}
+```
+
 @see (FRONT) https://github.com/fabiostb/front-ibentos
+
+
+Improvements (TODOs):
+- i18n
+- error handling (user/server/bd validations)
+- logging
+- mappeur with mapstruct json->pojo
+- +lombok
