@@ -11,7 +11,7 @@ Spring Boot API REST
 - DB <-- The data is stored in a MongoDb on the cloud (see IbentoDao). 
 > Note: No configuration for the database.
 - ``` Run IbentoApplication ```
-- Go to here if you want to test the API:
+- Go here if you want to test the API:
 ```sh
 localhost:8080/swagger-ui.htm
 ```
