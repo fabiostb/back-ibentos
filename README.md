@@ -1,4 +1,4 @@
-# back-ibentos
+# Back-end Ibento
 Simple CRUD Spring Boot REST API
 
 ## Event management
