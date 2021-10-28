@@ -21,7 +21,7 @@ mvn clean install
 localhost:8080/swagger-ui.html
 ```
 ## Enjoy It!
-@see (FRONT) https://github.com/fabiostb/front-ibentos
+@see (FRONT-END Angular) https://github.com/fabiostb/front-ibentos
 
 Json de test:
 ```json
