@@ -1,14 +1,11 @@
 package com.ibento;
 
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @CrossOrigin
@@ -19,7 +16,7 @@ public class IbentoController {
     private IbentoService service;
 
     @RequestMapping(method = GET, value = "{id}")
-    public IbentoDto get(@PathVariable String id) {
+    public IbentoDto get(@PathVariable Long id) {
         return this.service.getIbento(id);
     }
 
@@ -44,7 +41,7 @@ public class IbentoController {
     }
 
     @RequestMapping(method = DELETE, value = "{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable Long id) {
         this.service.deleteIbento(id);
     }
 

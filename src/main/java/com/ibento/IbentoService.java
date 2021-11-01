@@ -1,14 +1,12 @@
 package com.ibento;
 
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.mongodb.DBObject;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -16,53 +14,54 @@ import static java.util.Objects.nonNull;
 @Service
 public class IbentoService {
 
-    @Autowired
-    private IbentoDao dao;
+	@Autowired
+	private IbentoRepository repository;
 
-    @Autowired
-    private IbentoMapper mapper;
+	@Autowired
+	private IbentoMapper mapper;
 
-    public IbentoDto getIbento(String id) {
-        Document ibentoObj = this.dao.get(id);
-        return this.mapper.toDto(ibentoObj);
-    }
+	@Autowired
+	private IbentoInstant instant;
 
-    public List<IbentoListDto> getIbentos() {
-        List<Document> ibentos = this.dao.getAll();
-        List<IbentoDto> ibentosDto = this.mapper.toDto(ibentos);
-        return ibentosDto.stream().map(this::toList).collect(Collectors.toList());
-    }
+	public IbentoDto getIbento(Long id) {
+		Optional<Ibento> ibentoOpt = this.repository.findById(id);
+		return ibentoOpt.isPresent() ? this.mapper.toDto(ibentoOpt.get()) : null;
+	}
 
-    public List<IbentoDto> getIbentos(String name) {
-        return this.mapper.toDto(this.dao.find(name));
-    }
+	public List<IbentoListDto> getIbentos() {
+		List<IbentoDto> ibentosDto = this.mapper.toDto(repository.findAll());
+		return ibentosDto.stream().map(this::toList).collect(Collectors.toList());
+	}
 
-    public IbentoDto createIbento(IbentoDto ibentoToCreate) {
-        Document document = this.mapper.toDocument(ibentoToCreate);
-        return this.mapper.toDto(this.dao.create(document));
-    }
+	public List<IbentoDto> getIbentos(String name) {
+		return this.mapper.toDto(this.repository.findByNameContainingIgnoreCase(name));
+	}
 
-    public IbentoDto updateIbento(IbentoDto ibentoToUpdate) {
-        Document document = this.mapper.toDocument(ibentoToUpdate);
-        return this.mapper.toDto(this.dao.update(document));
-    }
+	public IbentoDto createIbento(IbentoDto ibentoToCreate) {
+		return this.updateIbento(ibentoToCreate);
+	}
 
-    public void deleteIbento(String id) {
-        this.dao.delete(id);
-    }
+	public IbentoDto updateIbento(IbentoDto ibentoToUpdate) {
+		Ibento savedIbento = this.repository.saveAndFlush(this.mapper.toModel(ibentoToUpdate));
+		return this.mapper.toDto(savedIbento);
+	}
 
-    private IbentoListDto toList(IbentoDto ibentoDto) {
-        IbentoListDto list = new IbentoListDto();
-        list.ibento = ibentoDto;
-        list.minutesBeforeStart = this.calculateMinutesBeforeStart(ibentoDto);
-        return list;
-    }
+	public void deleteIbento(Long id) {
+		this.repository.delete(new Ibento(id));
+	}
 
-    private Long calculateMinutesBeforeStart(IbentoDto ibento) {
-        Instant nowUTC = Instant.now();
-        if (nonNull(ibento.startDate) && nowUTC.isBefore(ibento.startDate.toInstant())) {
-            return Duration.between(nowUTC, ibento.startDate.toInstant()).toMinutes();
-        }
-        return null;
-    }
+	private IbentoListDto toList(IbentoDto ibentoDto) {
+		IbentoListDto list = new IbentoListDto();
+		list.ibento = ibentoDto;
+		list.minutesBeforeStart = this.calculateMinutesBeforeStart(ibentoDto);
+		return list;
+	}
+
+	private Long calculateMinutesBeforeStart(IbentoDto ibento) {
+		Instant nowUTC = this.instant.now();
+		if (nonNull(ibento.getStartDate()) && nowUTC.isBefore(ibento.getStartDate().toInstant())) {
+			return Duration.between(nowUTC, ibento.getStartDate().toInstant()).toMinutes();
+		}
+		return null;
+	}
 }
